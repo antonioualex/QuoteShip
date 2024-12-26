@@ -57,7 +57,7 @@ func (h ShipmentHandler) GetLatestExpectedRates(writer http.ResponseWriter, _ *h
 	// Calling the GetLatestExpectedRates method from the service layer to get the expected rates
 	expectedRates, err := h.s.GetLatestExpectedRates(expectedRatesPerOriginNum)
 	if err != nil {
-		// Return a nil response with a status of OK
+		// Return a nil response with a status of Bad Request if the expected rates are nil
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusBadRequest)
 
