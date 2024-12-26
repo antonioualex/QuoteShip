@@ -108,14 +108,13 @@ func (r *ShipmentRepository) upsertShipment(originShipments *domain.OriginShipme
 	// Check if the shipmentInput company already exists in the originShipmentsInput, if so update the shipmentInput if the new shipmentInput is more recent or has the same date but a lower price.
 	for i, shipmentQuote := range originShipments.Quotes {
 		if shipmentQuote.Company == shipment.Company {
-			if shipment.Date.After(shipmentQuote.Date) || (shipment.Date.Equal(shipmentQuote.Date) && shipment.Price < shipmentQuote.Price) {
+			if shipment.Date.After(shipmentQuote.Date) {
 				originShipments.Quotes[i] = domain.ShipmentQuote{
 					Company: shipment.Company,
 					Price:   shipment.Price,
 					Date:    shipment.Date,
 				}
 			}
-
 			return true
 		}
 	}
