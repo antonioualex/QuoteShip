@@ -100,14 +100,17 @@ When the service is shut down or restarted, all data are being erased.
 
 ## HowTo
 
-First of all, you need to clone the repository to your local machine and navigate to the project directory.
+First of all, you need to clone the repository to your local machine and navigate to the project root directory.
 
 ```shell
 cd cargoplot
 ```
-Then to run the Cargoplot service you can do that by using `Go(1.23+)` or `Docker`.
 
-### Using Golang
+### Running the Service
+
+To run the Cargoplot service you can do that by using `Go(1.23+)` or `Docker`.
+
+##### Using Golang
 
 Start by testing the service to ensure everything is working as expected.
 
@@ -118,8 +121,7 @@ go test ./...
 Then you can build and run the service using the following command:
 
 ```shell
-go build -o cargoplot cmd/main.go
-./cargoplot
+go build -o cargoplot cmd/main.go && ./cargoplot
 ```
 
 You can also run the service using the `go run` command:
@@ -128,15 +130,15 @@ You can also run the service using the `go run` command:
 go run cmd/main.go
 ```
 
-There is also an option to run the service with **environment variables** to specify the HTTP server address:
->Note: The default HTTP server address is `localhost:3142` and the port format requires a semi-colon `:`, e.g., `:3142`.
+You can also run the service with the following environment variables to specify the HTTP server address and update threshold,
+see [Environment Variables Section](#environment-variables) for more details.
 
 ```shell
-HTTP_SERVER_ADDR=your_server_address go run cmd/main.go
+HTTP_SERVER_ADDR=localhost:3142 UPDATE_THRESHOLD=1000 go run cmd/main.go
 ```
 
 
-### Using Docker
+##### Using Docker
 
 You can build and run the service using Docker. First, build the Docker image using the following command:
 
@@ -150,12 +152,24 @@ Then run the Docker container:
 docker run -p 3142:3142 cargoplot
 ```
 
-Alternatively, you can run the Docker container with environment variables to specify the HTTP server address:
+Alternatively, you can run the Docker container with the following environment variables to specify the HTTP server address
+and update threshold, see [Environment Variables Section](#environment-variables) for more details:
 
 ```shell
-docker run -e HTTP_SERVER_ADDR=your_server_address -p your_server_address:your_server_address your_image_name
+docker run -e HTTP_SERVER_ADDR=your_server_address -e UPDATE_THRESHOLD=your_update_threshold -p your_server_address:your_server_address your_image_name
 ```
 
+
+#### Environment Variables
+
+- The service allows customization through the following environment variables:
+
+  - **HTTP_SERVER_ADDR**: Specifies port for the HTTP server. The default is :3142.
+
+  - **UPDATE_THRESHOLD**: Determines the threshold for batch updates when processing shipment quotes.
+    This value must be an integer. If not set, the default value is 1000.
+
+>Note: If **UPDATE_THRESHOLD** is not a valid integer, the service will log an error and exit.
 
 ## Additional Information
 

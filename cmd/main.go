@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -18,31 +19,45 @@ import (
 
 // Constants for server timeouts
 const (
-	defaultAddr     = ":3142"           // Define default http address
-	readTimeout     = 5 * time.Second   // Define http server read timeout
-	writeTimeout    = 10 * time.Second  // Define http server write timeout
-	idleTimeout     = 120 * time.Second // Define http server idle timeout
-	shutdownTimeout = 10 * time.Second  // Define http server shutdown timeout
+	defaultAddr            = ":3142"           // Define default http address
+	defaultUpdateThreshold = "1000"            //Values to send before each price index retrieval (default 1000)
+	readTimeout            = 5 * time.Second   // Define http server read timeout
+	writeTimeout           = 10 * time.Second  // Define http server write timeout
+	idleTimeout            = 120 * time.Second // Define http server idle timeout
+	shutdownTimeout        = 10 * time.Second  // Define http server shutdown timeout
 )
 
 func main() {
 	// Fetch the server address from an environment variable or use the default value
 	addr := getEnv("HTTP_SERVER_ADDR", defaultAddr)
 
+	updateThreshold := getEnv("UPDATE_THRESHOLD", defaultUpdateThreshold)
+
+	// Convert the updateThreshold to an integer
+	updateThresholdInt, err := strconv.Atoi(updateThreshold)
+	if err != nil {
+		slog.Error("failed to convert update threshold to integer", "error", err.Error())
+		cleanExit(1)
+	}
+
 	// Create a context that listens for SIGINT or SIGTERM signals for graceful shutdown
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop() // Ensure resources associated with the signal context are released
 
-	if err := run(ctx, addr); err != nil {
+	if err := run(ctx, addr, updateThresholdInt); err != nil {
 		slog.Error("failed to run the application", "error", err.Error())
 		// Call a function to cleanly exit
 		cleanExit(1)
 	}
 }
 
-func run(ctx context.Context, addr string) error {
+func run(ctx context.Context, addr string, updateThreshold int) error {
+	slog.Info("Starting application...")
+	slog.Info("http server address", slog.String("addr", addr))
+	slog.Info("update threshold value", slog.Int("threshold", updateThreshold))
+
 	// Initialize the shipment repository
-	shipmentRepository, err := persistence.NewShipmentOfferRepository(ctx, 1000)
+	shipmentRepository, err := persistence.NewShipmentOfferRepository(ctx, updateThreshold)
 	if err != nil {
 		slog.Error("failed to create shipment repository", "error", err.Error())
 		return err
