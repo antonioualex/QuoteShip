@@ -134,9 +134,20 @@ func (r *ShipmentRepository) manageBatch() {
 	if r.shipmentCount%r.thresholdCount == 0 {
 		r.latestShipmentBatch = r.shipmentsByOrigin
 		r.shipmentCount = 0
+
+		// Sort each origin shipments batch by price
 		for _, originShipments := range r.latestShipmentBatch {
-			sort.SliceStable(originShipments.Quotes, func(i, j int) bool {
-				return originShipments.Quotes[i].Price < originShipments.Quotes[j].Price
+			// Sort the quotes by price, date, and company
+			sort.Slice(originShipments.Quotes, func(i, j int) bool {
+				// First condition: sort by price, if equal sort by date
+				if originShipments.Quotes[i].Price == originShipments.Quotes[j].Price {
+					// Secondary condition: sort by company
+					if originShipments.Quotes[i].Date.Equal(originShipments.Quotes[j].Date) {
+						return originShipments.Quotes[i].Company < originShipments.Quotes[j].Company
+					}
+					return originShipments.Quotes[i].Date.After(originShipments.Quotes[j].Date) // Tertiary condition: sort by date
+				}
+				return originShipments.Quotes[i].Price < originShipments.Quotes[j].Price // Primary condition: sort by price
 			})
 		}
 	}
