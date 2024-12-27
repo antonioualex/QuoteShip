@@ -25,4 +25,4 @@ jobs:
         run: go test ./... -v
 
       - name: Build
-        run: go build -o cargoplot cmd/main.go
+        run: go build -o quoteship cmd/main.go

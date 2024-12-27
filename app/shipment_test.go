@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"cargoplot/domain"
-	"cargoplot/persistence"
+	"quoteship/domain"
+	"quoteship/persistence"
 )
 
 func TestShipmentService_GetLatestExpectedRates(t *testing.T) {

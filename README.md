@@ -1,6 +1,6 @@
-# Cargoplot
+# QuoteShip
 
-The Cargoplot Pricing Service is designed to aggregate and analyze sea freight shipping quotes, 
+The QuoteShip pricing service is designed to aggregate and analyze sea freight shipping quotes, 
 enabling clients to **submit quotes** and retrieve the **expected rates** for shipping containers based on 
 the cheapest available quotes from multiple freight forwarding companies.
 
@@ -23,7 +23,7 @@ the cheapest available quotes from multiple freight forwarding companies.
 
 ## API Endpoints
 
-The cargoplot service features two main endpoints, one for submitting shipment quotes and another for retrieving 
+The quoteship service features two main endpoints, one for submitting shipment quotes and another for retrieving 
 expected rates.
 
 ##### Submit a Shipment Quote
@@ -39,8 +39,8 @@ effective date.
         {
             "company": {int},
             "price": {int},
-            "origin": "{string}",
-            "date": "{string}"
+            "origin": {string},
+            "date": {string}
         }
         ```
     - Body: JSON object with the following fields:
@@ -102,13 +102,9 @@ When the service is shut down or restarted, all data are being erased.
 
 First of all, you need to clone the repository to your local machine and navigate to the project root directory.
 
-```shell
-cd cargoplot
-```
-
 ### Running the Service
 
-To run the Cargoplot service you can do that by using `Go(1.23+)` or `Docker`.
+To run the QuoteShip service you can do that by using `Go(1.23+)` or `Docker`.
 
 ##### Using Golang
 
@@ -121,7 +117,7 @@ go test ./...
 Then you can build and run the service using the following command:
 
 ```shell
-go build -o cargoplot cmd/main.go && ./cargoplot
+go build -o quoteship cmd/main.go && ./quoteship
 ```
 
 You can also run the service using the `go run` command:
@@ -143,13 +139,13 @@ HTTP_SERVER_ADDR=localhost:3142 UPDATE_THRESHOLD=1000 go run cmd/main.go
 You can build and run the service using Docker. First, build the Docker image using the following command:
 
 ```shell
-docker build -t cargoplot .
+docker build -t quoteship .
 ```
 
 Then run the Docker container:
 
 ```shell
-docker run -p 3142:3142 cargoplot
+docker run -p 3142:3142 quoteship
 ```
 
 Alternatively, you can run the Docker container with the following environment variables to specify the HTTP server address
@@ -184,7 +180,6 @@ The service is implemented following `domain-driven design` principles, with the
 specified address and port. The handlers parse incoming requests, invoke service methods, and return responses.
 
 
-
 ### Missing Features
 
 - **Rate-Limiting and Throttling**: The service does not currently implement rate-limiting or throttling. 
@@ -193,12 +188,3 @@ specified address and port. The handlers parse incoming requests, invoke service
   This can be added to track the performance and health of the service.
 - **Benchmarking**: The service does not currently provide benchmarking capabilities. 
   This can be added to measure the performance of the service under different loads.
-- **Race Conditions**: Might need a closer look for any kind of race condition.
-
-### Thoughts for applying optimization
-
-- **Testing**: The service includes unit tests for the core logic. 
-  Additional tests and in a more structure can be added to cover edge cases and improve test coverage.
-- **Performance**: By tweaking the data structures and algorithms, the service can be optimized for performance.
-- **Concurrency**: The service can be made more efficient by introducing concurrency.
-- **Logging**: Adding structured logging can help in debugging and monitoring the service. At the moment, logging is mostly for critical errors.

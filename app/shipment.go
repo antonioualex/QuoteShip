@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"cargoplot/domain"
+	"quoteship/domain"
 )
 
 // ShipmentService handles business logic for managing and retrieving shipment data.

@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"cargoplot/domain"
+	"quoteship/domain"
 )
 
 // RegisterRoutes registers routes for the requested Shipment service.

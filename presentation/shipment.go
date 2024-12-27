@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"cargoplot/domain"
+	"quoteship/domain"
 )
 
 const (

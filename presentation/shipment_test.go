@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"cargoplot/app"
-	"cargoplot/domain"
-	"cargoplot/persistence"
+	"quoteship/app"
+	"quoteship/domain"
+	"quoteship/persistence"
 )
 
 func TestShipmentHandler_SubmitShipmentOfferOffer(t *testing.T) {

@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"cargoplot/app"
-	"cargoplot/persistence"
-	"cargoplot/presentation"
+	"quoteship/app"
+	"quoteship/persistence"
+	"quoteship/presentation"
 )
 
 // Constants for server timeouts

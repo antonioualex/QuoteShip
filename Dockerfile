@@ -14,7 +14,7 @@ COPY . ./
 RUN go test ./... -v
 
 # Build the Go application binary
-RUN go build -o cargoplot ./cmd
+RUN go build -o quoteship ./cmd
 
 # Use a distroless base image for the final image
 FROM gcr.io/distroless/base-debian12:nonroot
@@ -23,10 +23,10 @@ FROM gcr.io/distroless/base-debian12:nonroot
 WORKDIR /
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/cargoplot /cargoplot
+COPY --from=builder /app/quoteship /quoteship
 
 # Expose the application port
 EXPOSE 3142
 
 # Set the default command to run the service
-CMD ["/cargoplot"]
+CMD ["/quoteship"]

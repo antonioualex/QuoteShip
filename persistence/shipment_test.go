@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"cargoplot/domain"
+	"quoteship/domain"
 )
 
 var (

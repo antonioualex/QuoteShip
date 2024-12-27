@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"cargoplot/domain"
+	"quoteship/domain"
 )
 
 var (
