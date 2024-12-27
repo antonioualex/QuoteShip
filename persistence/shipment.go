@@ -114,17 +114,46 @@ func (r *ShipmentRepository) upsertShipment(originShipments *domain.OriginShipme
 					Price:   shipment.Price,
 					Date:    shipment.Date,
 				}
+
+				// remove origin shipment quote
+				originShipments.Quotes = append(originShipments.Quotes[:i], originShipments.Quotes[i+1:]...)
+
+				// find the correct index to insert the new shipment quote
+				index := sort.Search(len(originShipments.Quotes), func(i int) bool {
+					// First condition: sort by price, if equal sort by date
+					if originShipments.Quotes[i].Price == shipment.Price {
+						// Secondary condition: sort by company if the price and date are equal
+						if originShipments.Quotes[i].Date.Equal(shipment.Date) {
+							return originShipments.Quotes[i].Company > shipment.Company // return true if the company is greater
+						}
+						return originShipments.Quotes[i].Date.Before(shipment.Date) // return true if the date is before
+					}
+					return originShipments.Quotes[i].Price > shipment.Price // return true if the price is greater
+				})
+
+				// Insert the new shipment quote at the correct index
+				originShipments.Quotes = append(originShipments.Quotes[:index], append([]domain.ShipmentQuote{shipment.ShipmentQuote}, originShipments.Quotes[index:]...)...)
 			}
 			return true
 		}
 	}
 
-	// If the shipment company does not exist in the originShipments, add it.
-	originShipments.Quotes = append(originShipments.Quotes, domain.ShipmentQuote{
-		Company: shipment.Company,
-		Price:   shipment.Price,
-		Date:    shipment.Date,
+	// if company does not exist in the originShipmentsInput, find the correct index to insert the new shipment quote
+	// Sort the quotes by price, date, and company
+	index := sort.Search(len(originShipments.Quotes), func(i int) bool {
+		// First condition: sort by price, if equal sort by date
+		if originShipments.Quotes[i].Price == shipment.Price {
+			// Secondary condition: sort by company if the price and date are equal
+			if originShipments.Quotes[i].Date.Equal(shipment.Date) {
+				return originShipments.Quotes[i].Company > shipment.Company // return true if the company is greater
+			}
+			return originShipments.Quotes[i].Date.Before(shipment.Date) // return true if the date is before
+		}
+		return originShipments.Quotes[i].Price > shipment.Price // return true if the price is greater
 	})
+
+	// add the new shipment quote at the correct index
+	originShipments.Quotes = append(originShipments.Quotes[:index], append([]domain.ShipmentQuote{shipment.ShipmentQuote}, originShipments.Quotes[index:]...)...)
 
 	return true
 }
@@ -134,22 +163,6 @@ func (r *ShipmentRepository) manageBatch() {
 	if r.shipmentCount%r.thresholdCount == 0 {
 		r.latestShipmentBatch = r.shipmentsByOrigin
 		r.shipmentCount = 0
-
-		// Sort each origin shipments batch by price
-		for _, originShipments := range r.latestShipmentBatch {
-			// Sort the quotes by price, date, and company
-			sort.Slice(originShipments.Quotes, func(i, j int) bool {
-				// First condition: sort by price, if equal sort by date
-				if originShipments.Quotes[i].Price == originShipments.Quotes[j].Price {
-					// Secondary condition: sort by company
-					if originShipments.Quotes[i].Date.Equal(originShipments.Quotes[j].Date) {
-						return originShipments.Quotes[i].Company < originShipments.Quotes[j].Company
-					}
-					return originShipments.Quotes[i].Date.After(originShipments.Quotes[j].Date) // Tertiary condition: sort by date
-				}
-				return originShipments.Quotes[i].Price < originShipments.Quotes[j].Price // Primary condition: sort by price
-			})
-		}
 	}
 }
 
